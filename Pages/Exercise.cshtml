@@ -1,0 +1,50 @@
+﻿@page
+@model Telerik01.ExerciseModel
+@{
+    ViewData["Title"] = "Exercise";
+}
+
+<h1>Exercise</h1>
+
+
+@using Kendo.Mvc.UI
+@using Telerik01.ViewModels
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@Html.AntiForgeryToken()
+
+@(Html.Kendo().Grid<ExerciseViewModel>().Name("grid")
+    .Groupable()
+    .Sortable()
+    .Editable()
+    .Scrollable()
+    .ToolBar(x => x.Create())
+    .Columns(columns =>
+    {
+        columns.Bound(column => column.Id);
+        columns.Bound(column => column.AccountId);
+        columns.Bound(column => column.ActivityName);
+        columns.Command(column =>
+        {
+            column.Edit();
+            column.Destroy();
+        }).Width(230);
+    })
+    .DataSource(ds => ds.Ajax()
+        .Read(r => r.Url("/Exercise?handler=Read").Data("forgeryToken"))
+        .Update(u => u.Url("/Exercise?handler=Update").Data("forgeryToken"))
+        .Create(c => c.Url("/Exercise?handler=Create").Data("forgeryToken"))
+        .Destroy(d => d.Url("/Exercise?handler=Destroy").Data("forgeryToken"))
+        .Model(m => m.Id(id => id.Id))
+        .PageSize(10)
+        
+    )
+    .Pageable()
+    .Sortable()
+    .Filterable()
+    )
+
+
+<script>function forgeryToken() {
+    return kendo.antiForgeryTokens();
+}</script>
